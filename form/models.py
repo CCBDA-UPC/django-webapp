@@ -15,7 +15,7 @@ class Leads(models.Model):
                                       aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
                                       aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
                                       aws_session_token=settings.AWS_SESSION_TOKEN )
-            table = dynamodb.Table(settings.STARTUP_SIGNUP_TABLE)
+            table = dynamodb.Table(settings.CCBDA_SIGNUP_TABLE)
         except Exception as e:
             logger.error(
                 'Error connecting to database table: ' + (e.fmt if hasattr(e, 'fmt') else '') + ','.join(e.args))

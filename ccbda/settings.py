@@ -26,14 +26,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-!wfeiblzd(1k9*dbe_+h^wx$s@*4ui-0@havv23u68hnl-h6ho'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-DEBUG = os.getenv('DEBUG') == 'True'
+DEBUG = bool(os.environ.get("DJANGO_DEBUG", default=False))
 
-ALLOWED_HOSTS = json.loads(os.getenv('ALLOWED_HOSTS'))
-
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS').split(',')
 
 # Application definition
 
@@ -62,7 +61,7 @@ ROOT_URLCONF = 'ccbda.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR,'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -146,8 +145,8 @@ LOGGING = {
     },
 }
 
-STARTUP_SIGNUP_TABLE = os.environ['STARTUP_SIGNUP_TABLE']
-AWS_REGION = os.environ['AWS_REGION']
-AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
-AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
-AWS_SESSION_TOKEN = os.environ['AWS_SESSION_TOKEN']
+CCBDA_SIGNUP_TABLE = os.getenv('CCBDA_SIGNUP_TABLE')
+AWS_REGION = os.getenv('AWS_REGION')
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_SESSION_TOKEN = os.getenv('AWS_SESSION_TOKEN')
