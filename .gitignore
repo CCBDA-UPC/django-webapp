@@ -1,0 +1,35 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django stuff:
+*.log
+*.pot
+*.pyc
+*.sqlite3
+
+# If you are using PostgreSQL or MySQL, you might not need SQLite database files
+db.sqlite3
+
+# Media folder
+/media/
+
+# Ignore the virtual environment:
+.venv/
+venv/
+env/
+
+# Local configuration
+.env
+*.env
+
+# IDE/Editor files
+.idea/
+.vscode/
+*.swp
+
+# macOS files
+.DS_Store
+Dockerfile
+.private

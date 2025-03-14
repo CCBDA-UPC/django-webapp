@@ -1,0 +1,6 @@
+.venv
+*.env
+.gitignore
+README.md
+compose.yml
+*.sqlite
