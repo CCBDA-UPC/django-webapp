@@ -33,3 +33,7 @@ env/
 .DS_Store
 Dockerfile
 .private
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

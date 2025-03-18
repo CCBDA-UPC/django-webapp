@@ -1,6 +1,7 @@
 services:
   db:
     image: postgres:17
+    container_name: postgress-db
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
@@ -10,15 +11,14 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: always
-    container_name: postgress-db
     healthcheck:
       test: [ "CMD", "pg_isready", "-q", "-d", "${DB_NAME}", "-U", "${DB_USER}" ]
       interval: 1s
       timeout: 5s
       retries: 10
-  django-web:
+  code:
     build: .
-    container_name: django-docker
+    container_name: code
     ports:
       - "8000:8000"
     depends_on:
