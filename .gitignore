@@ -38,5 +38,5 @@ env/
 !.elasticbeanstalk/*.global.yml
 
 # Files and directories that Angel Toribio doesn't want to push to the repo
-.private
+.private/*
 Dockerfile
