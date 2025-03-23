@@ -32,6 +32,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 DEBUG = bool(os.environ.get("DJANGO_DEBUG", default=False))
 
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS').split(':')
+# Allow any IP such as 172.*.*.*
 ALLOWED_CIDR_NETS = ['172.0.0.0/8']
 
 # Application definition
