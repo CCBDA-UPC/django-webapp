@@ -32,6 +32,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 DEBUG = bool(os.environ.get("DJANGO_DEBUG", default=False))
 
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS').split(':')
+ALLOWED_CIDR_NETS = ['172.0.0.0/24']
 
 # Application definition
 
@@ -53,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allow_cidr.middleware.AllowCIDRMiddleware',
 ]
 
 ROOT_URLCONF = 'ccbda.urls'
