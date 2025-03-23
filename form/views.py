@@ -5,9 +5,8 @@ from django.conf import settings
 import logging
 
 def home(request):
-    logging.info(f'ALLOWED_HOSTS {settings.ALLOWED_HOSTS}')
-    logging.info(f'ALLOWED_CIDR_NETS {settings.ALLOWED_CIDR_NETS}')
-
+    logging.error(f'ALLOWED_HOSTS {settings.ALLOWED_HOSTS}')
+    logging.error(f'ALLOWED_CIDR_NETS {settings.ALLOWED_CIDR_NETS}')
     return render(request, 'form/index.html')
 
 
