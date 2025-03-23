@@ -37,9 +37,10 @@ jobs:
         run: |
           # Build a docker container and push it to ECR so that it can be deployed to Elastic Beanstalk.
           echo "image=$IMAGE_ADDR" # >> $GITHUB_OUTPUT          
-          docker build -t $IMAGE_ADDR .
+          docker build -t "django-docker" .
           docker push $IMAGE_ADDR
           
+          ***.dkr.ecr.***.amazonaws.com/***:latest
 
       - name: AWS Elastic Beanstalk environment
         id: eb-env
