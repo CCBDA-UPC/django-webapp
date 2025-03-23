@@ -53,7 +53,7 @@ jobs:
       run: |
         # Update  Dockerrun.aws.json
         cd eb
-        cat Dockerrun.aws.json | sed "s/<AWS_ACCOUNT_ID>/${{secrets.AWS_ACCOUNT_ID}}/"  | sed "s/<ECR_REPOSITORY>/${{ECR_REPOSITORY}}/" > Dockerrun.aws.json
+        cat Dockerrun.aws.json | sed "s/<AWS_ACCOUNT_ID>/${{secrets.AWS_ACCOUNT_ID}}/"  | sed "s/<ECR_REPOSITORY>/$ECR_REPOSITORY/" > Dockerrun.aws.json
         zip -r ../${{github.run_id}}.zip Dockerrun.aws.json
         aws s3 cp "../${{github.run_id}}.zip" s3://elasticbeanstalk-us-east-1-${{ secrets.AWS_ACCOUNT_ID }}/django-webapp-eb/
         
