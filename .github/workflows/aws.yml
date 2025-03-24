@@ -44,6 +44,28 @@ jobs:
           docker tag django-docker:${{  github.ref_name }} $IMAGE_ADDR
           docker push $IMAGE_ADDR
 
+      - name: Update Dockerrun
+        uses: actions/github-script@v7
+        id: update-dockerrun
+        env:
+          IMAGE_ADDR: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{  github.ref_name }}
+        with:
+            result-encoding: string
+            script: |
+              try {
+                const fpath = '.housekeeping/elasticbeanstalk/Dockerrun.aws.json'
+                const fs = require('fs')
+                const jsonString = fs.readFileSync(fpath)
+                var apps = JSON.parse(jsonString)
+                console.log('Parsed JSON data:', apps)
+                apps["Image"]["Name"] = $IMAGE_ADDR
+                console.log('Parsed JSON data:', apps);
+                fs.writeFileSync(fpath,JSON.stringify(apps))
+              } catch(err) {
+                core.error("Error while reading or parsing the JSON")
+                core.setFailed(err)
+              }
+
       - name: AWS Elastic Beanstalk environment
         id: eb-env
         run: |
