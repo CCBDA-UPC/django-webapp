@@ -14,6 +14,8 @@ from pathlib import Path
 import os
 import json
 from dotenv import load_dotenv
+import requests
+import logging
 
 # Load environment variables from a .env file
 load_dotenv()
@@ -157,3 +159,21 @@ AWS_REGION = os.getenv('AWS_REGION')
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 AWS_SESSION_TOKEN = os.getenv('AWS_SESSION_TOKEN')
+
+def get_metadata(path=''):
+    try:
+        headers = {"X-aws-ec2-metadata-token-ttl-seconds": "3600"}
+        response = requests.put('http://169.254.169.254/latest/api/token', headers=headers, timeout=5)
+        if response.status_code == 200:
+            response = requests.get(f'http://169.254.169.254/latest/meta-data/{path}',
+                                    headers={'X-aws-ec2-metadata-token': response.text})
+            response.raise_for_status()  # Raises an HTTPError
+            return response.text
+        else:
+            return "unknown"
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Error accessing metadata: {e}")
+        return "localhost"
+
+AWS_EC2_INSTANCE_ID = get_metadata('instance-id')
+ALLOWED_HOSTS.append(get_metadata('local-ipv4'))
