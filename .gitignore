@@ -33,7 +33,7 @@ env/
 .DS_Store
 
 # Elastic Beanstalk Files
-eb/.elasticbeanstalk/*
+.housekeeping/elasticbeanstalk/.elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 

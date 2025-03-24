@@ -26,7 +26,7 @@ except:
     print('ERROR: filename missing\npython updateGitHubSecrets.py filename')
     exit()
 
-repo = Repo('.')
+repo = Repo('../..')
 
 github_repo = repo.config_reader().get('remote "origin"','url').replace('.git','').replace('https://github.com/','')
 
@@ -58,7 +58,7 @@ for s in otherSecrets:
 
 print('\nUpdating Dockerrun.aws.json')
 
-with open('Dockerrun.aws.json', 'r') as f:
+with open('../Dockerrun.aws.json', 'r') as f:
     s = f.read()
 
 dockerrun = {
@@ -76,5 +76,5 @@ try:
 except Exception as e:
     repo.create_file('eb/Dockerrun.aws.json', 'added Dockerrun.aws.json', dockerrun_content, branch='main')
 
-with open('eb/Dockerrun.aws.json', 'w') as f:
+with open('../elasticbeanstalk/Dockerrun.aws.json', 'w') as f:
     f.write(dockerrun_content)
