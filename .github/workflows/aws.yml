@@ -3,7 +3,8 @@ name: Deploy to AWS Elastic Beanstalk
 on:
   push:
     # branches [ "main", "cloud" ]:
-    tags: [ "^v[0-9]+.[0-9]+.[0-9]+$" ]
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
 
 
 permissions:
