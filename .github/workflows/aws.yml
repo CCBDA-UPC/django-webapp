@@ -36,7 +36,7 @@ jobs:
       - name: Build, tag, and push image to AWS ECR
         id: build-image
         env:
-          IMAGE_ADDR: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{  github.ref_name }}"
+          IMAGE_ADDR: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{  github.ref_name }}
         run: |
           # Build a docker container and push it to ECR so that it can be deployed to Elastic Beanstalk.
           echo "image=$IMAGE_ADDR" # >> $GITHUB_OUTPUT          
