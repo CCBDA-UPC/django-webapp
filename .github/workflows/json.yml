@@ -4,7 +4,7 @@ on:
   push:
 
 env:
-  ACTIONS_RUNNER_DEBUG = true
+  ACTIONS_RUNNER_DEBUG: true
 
 permissions:
   contents: read
