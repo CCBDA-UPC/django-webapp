@@ -16,6 +16,9 @@ jobs:
     environment: production
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: "show dir"
         id: show-dir
         run: |
