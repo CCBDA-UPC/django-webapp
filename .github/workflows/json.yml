@@ -17,16 +17,28 @@ jobs:
 
     steps:
       - name: "Read JSON"
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         id: check-env
         with:
             result-encoding: string
             script: |
-              try {
-                const fs = require('fs')
-                const jsonString = fs.readFileSync('./.housekeeping/Dockerrun.aws.json')
-                var apps = JSON.parse(jsonString)
-              } catch(err) {
-                core.error("Error while reading or parsing the JSON")
-                core.setFailed(err)
-              }
+              const fs = require('fs'); // Import the fs (File System) module
+
+              // Define the path to the file
+              const filePath = './.housekeeping/Dockerrun.aws.json';
+
+              // Read the file and parse it
+              fs.readFile(filePath, 'utf8', (err, data) => {
+                if (err) {
+                  console.error('Error reading the file:', err);
+                  return;
+                }
+
+                try {
+                  // Parse the JSON data
+                  const jsonData = JSON.parse(data);
+                  console.log('Parsed JSON data:', jsonData);
+                } catch (parseErr) {
+                  console.error('Error parsing the JSON:', parseErr);
+                }
+              });
