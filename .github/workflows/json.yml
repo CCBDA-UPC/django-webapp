@@ -3,6 +3,9 @@ name: Change JSON
 on:
   push:
 
+env:
+  ACTIONS_RUNNER_DEBUG = true
+
 permissions:
   contents: read
 
