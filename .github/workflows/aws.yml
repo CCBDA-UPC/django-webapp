@@ -58,7 +58,7 @@ jobs:
                 const jsonString = fs.readFileSync(fpath)
                 var apps = JSON.parse(jsonString)
                 console.log('Parsed JSON data:', apps)
-                apps["Image"]["Name"] = $IMAGE_ADDR
+                apps["Image"]["Name"] = process.env.IMAGE_ADDR
                 console.log('Parsed JSON data:', apps);
                 fs.writeFileSync(fpath,JSON.stringify(apps))
               } catch(err) {
