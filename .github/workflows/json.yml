@@ -25,7 +25,8 @@ jobs:
               const fs = require('fs'); // Import the fs (File System) module
 
               // Define the path to the file
-              const filePath = './.housekeeping/elasticbeanstalk/Dockerrun.aws.json';
+              console.log('Current working directory:', process.cwd());
+              const filePath = '.housekeeping/elasticbeanstalk/Dockerrun.aws.json';
 
               // Read the file and parse it
               fs.readFile(filePath, 'utf8', (err, data) => {
