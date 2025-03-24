@@ -1,10 +1,10 @@
 name: Deploy to AWS Elastic Beanstalk
 
 on:
-  push:
-    branches: [ "main", "cloud" ]
+  create:
     tags:
-      - 'v*.*.*'
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
 
 permissions:
   contents: read
@@ -18,18 +18,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Check Tag
-        id: check-tag
-        run: |
-            if [[ ${{ github.event.ref }} =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-             echo "match=true" >> $GITHUB_OUTPUT
-            fi
-
-      - name: Build
-        if: steps.check-tag.outputs.match == 'true'
-        run: |
-          echo "Tag is a match"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
