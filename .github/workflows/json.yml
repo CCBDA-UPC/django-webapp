@@ -1,0 +1,29 @@
+name: Change JSON
+
+on:
+  push:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: "Read JSON"
+        uses: actions/github-script@v6
+        id: check-env
+        with:
+            result-encoding: string
+            script: |
+              try {
+                const fs = require('fs')
+                const jsonString = fs.readFileSync('./housekeeping/Dockerrun.json')
+                var apps = JSON.parse(jsonString)
+              } catch(err) {
+                core.error("Error while reading or parsing the JSON")
+                core.setFailed(err)
+              }
