@@ -16,6 +16,13 @@ jobs:
     environment: production
 
     steps:
+      - name: "show dir"
+        id: show-dir
+        run: |
+          pwd
+          ls -lR
+        
+
       - name: "Read JSON"
         uses: actions/github-script@v7
         id: check-env
