@@ -19,7 +19,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: "Read JSON"
+      - name: Update Dockerrun
         uses: actions/github-script@v7
         id: check-env
         with:
