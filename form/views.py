@@ -1,12 +1,11 @@
 from django.http import HttpResponse
 from django.shortcuts import render
-from .models import Leads
-from django.conf import settings
-import logging
+from .models import Leads, Feeds
+
+
 
 def home(request):
-    logging.warning(f'ALLOWED_HOSTS {settings.ALLOWED_HOSTS}')
-    return render(request, 'form/index.html')
+    return render(request, 'form/index.html', {'feeds': Feeds.objects.all()})
 
 
 def signup(request):

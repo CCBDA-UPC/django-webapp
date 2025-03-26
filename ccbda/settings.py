@@ -17,8 +17,12 @@ from dotenv import load_dotenv
 import requests
 import logging
 
+import form.apps
+
 
 def get_metadata(path='', default=''):
+    if DEBUG:
+        return default
     try:
         headers = {"X-aws-ec2-metadata-token-ttl-seconds": "60"}
         response = requests.put('http://169.254.169.254/latest/api/token', headers=headers, timeout=5)
