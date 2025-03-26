@@ -1,4 +1,3 @@
-# logs configuration
 import logging.handlers
 import boto3
 import os
@@ -31,8 +30,8 @@ class S3RotatingFileHandler(logging.handlers.RotatingFileHandler):
         else:
             stem = pathlib.Path(source).stem
             suffix = pathlib.Path(source).suffix
-            now = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
-            s3_key = f'{self.logs_prefix}{stem}.{now}{suffix}'
+            now = datetime.now(timezone.utc).strftime("%Y-%m-%d_%H-%M-%S")
+            s3_key = f'{self.logs_prefix}{stem}.{now}.{suffix}'
 
             if os.path.exists(source):
                 os.rename(source, dest)

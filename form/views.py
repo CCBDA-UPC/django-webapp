@@ -5,7 +5,7 @@ from django.conf import settings
 import logging
 
 def home(request):
-    logging.error(f'ALLOWED_HOSTS {settings.ALLOWED_HOSTS}')
+    logging.warning(f'ALLOWED_HOSTS {settings.ALLOWED_HOSTS}')
     return render(request, 'form/index.html')
 
 

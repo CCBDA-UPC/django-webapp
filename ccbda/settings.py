@@ -17,6 +17,23 @@ from dotenv import load_dotenv
 import requests
 import logging
 
+
+def get_metadata(path='', default=''):
+    try:
+        headers = {"X-aws-ec2-metadata-token-ttl-seconds": "60"}
+        response = requests.put('http://169.254.169.254/latest/api/token', headers=headers, timeout=5)
+        if response.status_code == 200:
+            response = requests.get(f'http://169.254.169.254/latest/meta-data/{path}',
+                                    headers={'X-aws-ec2-metadata-token': response.text})
+            response.raise_for_status()  # Raises an HTTPError
+            return response.text
+        else:
+            return "unknown"
+    except requests.exceptions.RequestException as e:
+        logging.warning(f"Error accessing metadata: {e}")
+        return default
+
+
 # Load environment variables from a .env file
 load_dotenv()
 
@@ -34,7 +51,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 DEBUG = bool(os.environ.get("DJANGO_DEBUG", default=False))
 
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS').split(':')
-
+ALLOWED_HOSTS.append(get_metadata('local-ipv4','127.0.0.1'))
 
 # Application definition
 
@@ -86,7 +103,11 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     },
-    "postgresql": {
+}
+DATABASE = os.getenv('DATABASE','default')
+
+if DATABASE == "postgresql":
+    DATABASES['postgresql'] = {
         "ENGINE": "django.db.backends.postgresql",
         'DISABLE_SERVER_SIDE_CURSORS': True,
         "NAME": os.getenv('DB_NAME', '---no-db-name---'),
@@ -95,9 +116,7 @@ DATABASES = {
         "HOST": os.getenv('DB_HOST', '127.0.0.1'),
         "PORT": os.getenv('DB_PORT', 5432),
     }
-}
 
-DATABASES['default'] = DATABASES[os.getenv('DATABASE','default')]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -138,18 +157,56 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+AWS_EC2_INSTANCE_ID = get_metadata('instance-id','localhost')
+
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{asctime} {levelname} [" + AWS_EC2_INSTANCE_ID + "] [{funcName}:{module}:{lineno}] {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{asctime} {levelname} {message}",
+            "style": "{",
         },
     },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+        'file': {
+            'level': 'INFO',
+            "formatter": "verbose",
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, "file.log"),
+            "maxBytes": 5 * 1024,  # 5 K
+            "backupCount": 1,
+            "encoding": None,
+            "delay": False,
+        },
+        "s3": {
+            "level": "INFO",
+            "formatter": "verbose",
+            "class": "ccbda.S3RotatingFileHandler",
+            "filename": os.path.join(BASE_DIR, "s3.log"),
+            "maxBytes": 1024 ,  # 5 K
+            "backupCount": 1,
+            "encoding": None,
+            "delay": 0,
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console", "file", "s3"],
+            "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+            "propagate": False,
         },
     },
 }
@@ -160,20 +217,5 @@ AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 AWS_SESSION_TOKEN = os.getenv('AWS_SESSION_TOKEN')
 
-def get_metadata(path=''):
-    try:
-        headers = {"X-aws-ec2-metadata-token-ttl-seconds": "3600"}
-        response = requests.put('http://169.254.169.254/latest/api/token', headers=headers, timeout=5)
-        if response.status_code == 200:
-            response = requests.get(f'http://169.254.169.254/latest/meta-data/{path}',
-                                    headers={'X-aws-ec2-metadata-token': response.text})
-            response.raise_for_status()  # Raises an HTTPError
-            return response.text
-        else:
-            return "unknown"
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Error accessing metadata: {e}")
-        return "localhost"
-
-AWS_EC2_INSTANCE_ID = get_metadata('instance-id')
-ALLOWED_HOSTS.append(get_metadata('local-ipv4'))
+AWS_S3_BUCKET_NAME = os.getenv('AWS_S3_BUCKET_NAME')
+AWS_S3_LOGS_PREFIX = os.getenv('AWS_S3_LOGS_PREFIX')
