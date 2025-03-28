@@ -1,5 +1,4 @@
 import boto3
-import re
 from django.conf import settings
 import feedparser
 import requests

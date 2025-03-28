@@ -4,9 +4,11 @@ from .models import Leads, Feeds
 from django.views.generic.base import HttpResponseRedirect
 import datetime
 import logging
+from django.conf import settings
 from urllib.parse import parse_qs, urlparse
 
 logger = logging.getLogger('django')
+logger.info('ALLOWED_HOSTS '+','.join(settings.ALLOWED_HOSTS))
 
 def home(request):
     if Feeds.objects.all().count() == 0:

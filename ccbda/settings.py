@@ -19,7 +19,7 @@ import logging
 
 import form.apps
 
-logger = logging.getLogger('django')
+logger = logging.getLogger()
 
 def get_metadata(path='', default=''):
     if DEBUG:
@@ -57,6 +57,7 @@ DEBUG = bool(os.environ.get("DJANGO_DEBUG", default=False))
 
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS').split(':')
 ALLOWED_HOSTS.append(get_metadata('local-ipv4','127.0.0.1'))
+ALLOWED_HOSTS = list(set(ALLOWED_HOSTS))
 
 # Application definition
 
@@ -197,7 +198,7 @@ LOGGING = {
             "formatter": "verbose",
             "class": "ccbda.S3RotatingFileHandler",
             "filename": os.path.join(BASE_DIR, "s3.log"),
-            "maxBytes": 1024 ,  # 5 K
+            "maxBytes": 5 * 1024,  # 5 K
             "backupCount": 1,
             "encoding": None,
             "delay": 0,
