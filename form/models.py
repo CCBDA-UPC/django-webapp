@@ -2,37 +2,15 @@ import boto3
 from django.conf import settings
 import logging
 from django.db import models
-import feedparser
-import requests
 
-rss_urls = [
-    'https://www.cloudcomputing-news.net/feed/',
-    'https://feeds.feedburner.com/cioreview/fvHK',
-    'https://www.techrepublic.com/rssfeeds/topic/cloud/',
-    'https://aws.amazon.com/blogs/aws/feed/',
-    'https://cloudtweaks.com/feed/',
-]
 
 class Feeds(models.Model):
     title = models.CharField(max_length=200)
     link = models.URLField()
     summary = models.TextField()
     author = models.CharField(max_length=120)
+    hits = models.BigIntegerField(default=0)
 
-    def __init__(self):
-        for u in rss_urls:
-            response = requests.get(u)
-            try:
-                feed = feedparser.parse(response.content)
-                for entry in feed.entries:
-                    self.objects.create(
-                        title=entry.title,
-                        link=entry.link,
-                        summary=entry.summary,
-                        author=entry.author
-                    )
-            except Exception as e:
-                logging.error(f'Feed reading error: {e}')
 
 class Leads():
 

@@ -9,4 +9,6 @@ urlpatterns = [
     path('', views.home, name='home'),
     # ex: /signup
     path('signup', views.signup, name='signup'),
+
+    path("hit/<slug:id>/", views.hit, name="hit"),
 ]

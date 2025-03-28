@@ -65,7 +65,17 @@
 	</div>
 {% endblock %}
 {% block feeds %}
-	hello
+	<div class="row">
+		{% for f in feeds %}
+			<div class="w-50 mb-4">
+				<h3>{{ f.title }}</h3>
+				<p class="small">hits: {{ f.hits }}</p>
+				<div>{{ f.summary| safe }}<br/>
+					<a href="{{ f.link }}" target="_blank">Read more...</a>
+				</div>
+			</div>
+		{% endfor %}
+	</div>
 {% endblock %}
 {% block scripts %}
 	{% csrf_token %}
