@@ -1,4 +1,3 @@
-# logs configuration
 import logging.handlers
 import boto3
 import os
@@ -6,6 +5,9 @@ from botocore.exceptions import ClientError
 from django.conf import settings
 import pathlib
 from datetime import datetime, timezone
+
+logger = logging.getLogger('django')
+logger_root = logging.getLogger()
 
 
 class S3RotatingFileHandler(logging.handlers.RotatingFileHandler):
@@ -26,13 +28,14 @@ class S3RotatingFileHandler(logging.handlers.RotatingFileHandler):
             self.logs_prefix += "/"
 
     def rotate(self, source, dest):
+        logger_root.info(f'ROTATING {self.name} ')
         if callable(self.rotator):
             self.rotator(source, dest)
         else:
             stem = pathlib.Path(source).stem
             suffix = pathlib.Path(source).suffix
-            now = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
-            s3_key = f'{self.logs_prefix}{stem}.{now}{suffix}'
+            now = datetime.now(timezone.utc).strftime("%Y-%m-%d_%H-%M-%S")
+            s3_key = f'{self.logs_prefix}{stem}.{now}.{suffix}'
 
             if os.path.exists(source):
                 os.rename(source, dest)
@@ -46,10 +49,9 @@ class S3RotatingFileHandler(logging.handlers.RotatingFileHandler):
             log_data = self.format(record)
             try:
                 if self.shouldRollover(record):
-                    logging.info(f'ROLLOVER {record.name}')
                     self.doRollover()
                 self.stream.write(log_data + self.terminator)
             except Exception as err:
                 self.handleError(record)
         except ClientError as e:
-            logging.error(f"Error sending log to S3: {e}")
+            logger.error(f"Error sending log to S3: {e}")
