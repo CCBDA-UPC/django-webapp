@@ -39,8 +39,8 @@ class S3RotatingFileHandler(logging.handlers.RotatingFileHandler):
 
             if os.path.exists(source):
                 os.rename(source, dest)
-            with open(dest, "rb") as f:
-                self.s3_client.upload_fileobj(f, self.bucket_name, s3_key)
+            if os.stat(dest).st_size > 0:
+                self.s3_client.upload(dest, self.bucket_name, s3_key)
             os.remove(dest)
 
 
