@@ -1,0 +1,74 @@
+name: Build new image and deploy to AWS Elastic Beanstalk
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+
+
+      - name: Login to AWS ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push image to AWS ECR
+        id: build-image
+        env:
+          IMAGE_ADDR: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{  github.ref_name }}
+        run: |
+          # Build a docker container and push it to ECR so that it can be deployed to Elastic Beanstalk.
+          echo "image=$IMAGE_ADDR" >> $GITHUB_OUTPUT          
+          docker build -t django-docker:${{  github.ref_name }} .
+          docker tag django-docker:${{  github.ref_name }} $IMAGE_ADDR
+          docker push $IMAGE_ADDR
+
+      - name: Update Dockerrun
+        uses: actions/github-script@v7
+        id: update-dockerrun
+        env:
+          IMAGE_ADDR: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{  github.ref_name }}
+        with:
+            result-encoding: string
+            script: |
+              try {
+                const fpath = '.housekeeping/elasticbeanstalk/Dockerrun.aws.json'
+                const fs = require('fs')
+                const jsonString = fs.readFileSync(fpath)
+                var apps = JSON.parse(jsonString)
+                apps["Image"]["Name"] = process.env.IMAGE_ADDR
+                fs.writeFileSync(fpath,JSON.stringify(apps))
+              } catch(err) {
+                core.error("Error while reading or parsing the JSON")
+                core.setFailed(err)
+              }
+
+      - name: AWS Elastic Beanstalk environment
+        id: eb-env
+        run: |
+          # Update  Dockerrun.aws.json
+          cd .housekeeping/elasticbeanstalk
+          zip -r ../${{github.ref_name}}.zip Dockerrun.aws.json
+          aws s3 cp "../${{github.ref_name}}.zip" s3://elasticbeanstalk-us-east-1-${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.ELASTIC_BEANSTALK_APP_NAME }}/
+          aws elasticbeanstalk create-application-version --application-name ${{ secrets.ELASTIC_BEANSTALK_APP_NAME }} --version-label ${{github.sha}} --description ${{github.ref_name}} --source-bundle S3Bucket="elasticbeanstalk-us-east-1-${{ secrets.AWS_ACCOUNT_ID }}",S3Key="${{ secrets.ELASTIC_BEANSTALK_APP_NAME }}/${{github.ref_name}}.zip"
+          aws elasticbeanstalk update-environment --application-name ${{ secrets.ELASTIC_BEANSTALK_APP_NAME }} --environment-name ${{ secrets.ELASTIC_BEANSTALK_ENV_NAME }} --version-label ${{github.sha}}
+          aws elasticbeanstalk wait environment-updated --application-name ${{ secrets.ELASTIC_BEANSTALK_APP_NAME }} --environment-name ${{ secrets.ELASTIC_BEANSTALK_ENV_NAME }}
