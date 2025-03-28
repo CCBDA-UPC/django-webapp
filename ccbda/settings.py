@@ -112,7 +112,7 @@ DATABASES = {
 DATABASE = os.getenv('DATABASE','default')
 
 if DATABASE == "postgresql":
-    DATABASES['postgresql'] = {
+    DATABASES['default'] = {
         "ENGINE": "django.db.backends.postgresql",
         'DISABLE_SERVER_SIDE_CURSORS': True,
         "NAME": os.getenv('DB_NAME', '---no-db-name---'),
