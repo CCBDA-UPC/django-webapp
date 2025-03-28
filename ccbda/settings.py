@@ -23,6 +23,7 @@ logger = logging.getLogger()
 
 def get_metadata(path='', default=''):
     if DEBUG:
+        print('get_metadata [0] ', path, DEBUG)
         return default
     try:
         headers = {"X-aws-ec2-metadata-token-ttl-seconds": "60"}
