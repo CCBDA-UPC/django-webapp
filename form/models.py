@@ -39,7 +39,7 @@ class Feeds(models.Model):
                         anchor['target'] = '_blank'
                     article.summary = str(summary)
                     article.save()
-                    print(entry.title)
+                    logger.info(f'Create article "{entry.title}"')
             except Exception as e:
                 logger.error(f'Feed reading error: {e}')
 
