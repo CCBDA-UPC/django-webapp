@@ -6,7 +6,6 @@ import logging
 
 def home(request):
     logging.error(f'ALLOWED_HOSTS {settings.ALLOWED_HOSTS}')
-    logging.error(f'ALLOWED_CIDR_NETS {settings.ALLOWED_CIDR_NETS}')
 
     return render(request, 'form/index.html')
 
