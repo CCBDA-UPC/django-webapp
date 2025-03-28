@@ -14,19 +14,21 @@
 				<p id="signupErrorText">Well this is embarrassing.<br/> It looks like we're having trouble getting you on the list.
 				</p>
 			</div>
-			<div class="container-fluid  p-5" id="jumbohome">
-				<h1>The next big thing is coming...</h1>
-				<div class="row">
-					<div class="col-sm-9">
-						<p class="lead">We're pretty thrilled to unveil the subject you always wanted to enroll in.</p>
-						<p>Sign up below to be notified when we officially launch!</p>
-						<p>
-							<button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#signupModal">Sign up today
-							</button>
-						</p>
+			{% if email|length == 0 %}
+				<div class="container-fluid  p-5" id="jumbohome">
+					<h1>The next big thing is coming...</h1>
+					<div class="row">
+						<div class="col-sm-9">
+							<p class="lead">We're pretty thrilled to unveil the subject you always wanted to enroll in.</p>
+							<p>Sign up below to be notified when we officially launch!</p>
+							<p>
+								<button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#signupModal">Sign up today
+								</button>
+							</p>
+						</div>
 					</div>
 				</div>
-			</div>
+			{% endif %}
 		</div>
 	</div>
 	<!-- Modal -->
@@ -65,7 +67,8 @@
 	</div>
 {% endblock %}
 {% block feeds %}
-	<div class="row">
+	<div id="feedDisplay" class="row" style="display:{% if email|length == 0 %}none{% else %}visible{% endif %}">
+		<hr>
 		{% for f in feeds %}
 			<div class="w-50 mb-4">
 				<h3>{{ f.title }}</h3>
@@ -98,20 +101,23 @@
             $("#signup").click(function () {
                 $.post("{% url 'form:signup' %}", $("#signupForm").serialize(),
                     function (data) {
+                        $("#jumbohome").hide();
+                        $("#feedDisplay").show();
                         $("#signupSuccess").show();
                     }
                 ).error(function (xhr) {
                     switch (xhr.status) {
                         case 409:
+                            $("#jumbohome").hide();
+                            $("#feedDisplay").show();
                             $("#signupDuplicate").show();
                             break;
                         default:
                             $("#signupError").show();
                     }
-                })
-                    .always(function () {
-                        $("#signupModal").modal('hide');
-                    });
+                }).always(function () {
+                    $("#signupModal").modal('hide');
+                });
             })
         });
 	</script>

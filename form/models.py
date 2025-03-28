@@ -1,8 +1,16 @@
 import boto3
+import re
 from django.conf import settings
+import feedparser
+import requests
 import logging
 from django.db import models
+from django.shortcuts import reverse
+from urllib.parse import urlencode, urljoin
+from bs4 import BeautifulSoup
 
+
+logger = logging.getLogger('django')
 
 class Feeds(models.Model):
     title = models.CharField(max_length=200)
@@ -10,6 +18,30 @@ class Feeds(models.Model):
     summary = models.TextField()
     author = models.CharField(max_length=120)
     hits = models.BigIntegerField(default=0)
+
+    def refresh_data(self):
+        for u in settings.RSS_URLS:
+            response = requests.get(u)
+            try:
+                feed = feedparser.parse(response.content)
+                for entry in feed.entries:
+                    article = Feeds.objects.create(
+                        title=entry.title,
+                        link='',
+                        summary='',
+                        author=entry.author
+                    )
+                    base_link = reverse('form:hit', kwargs={'id': article.id})
+                    article.link = urljoin(base_link,'?'+urlencode({'url':entry.link}))
+                    summary = BeautifulSoup(entry.summary, 'html.parser')
+                    for anchor in summary.find_all('a'):
+                        anchor['href'] = urljoin(base_link,'?'+urlencode({'url':anchor['href']}))
+                        anchor['target'] = '_blank'
+                    article.summary = str(summary)
+                    article.save()
+                    print(entry.title)
+            except Exception as e:
+                logger.error(f'Feed reading error: {e}')
 
 
 class Leads():
@@ -23,7 +55,7 @@ class Leads():
                                       aws_session_token=settings.AWS_SESSION_TOKEN)
             table = dynamodb.Table(settings.CCBDA_SIGNUP_TABLE)
         except Exception as e:
-            logging.error(
+            logger.error(
                 'Error connecting to database table: ' + (e.fmt if hasattr(e, 'fmt') else '') + ','.join(e.args))
             return 403
         try:
@@ -36,16 +68,16 @@ class Leads():
                 ReturnValues='ALL_OLD',
             )
         except Exception as e:
-            logging.error(
+            logger.error(
                 'Error adding item to database: ' + (e.fmt if hasattr(e, 'fmt') else '') + ','.join(e.args))
             return 403
         status = response['ResponseMetadata']['HTTPStatusCode']
         if status == 200:
             if 'Attributes' in response:
-                logging.info('Existing item updated to database.')
+                logger.info('Existing item updated to database.')
                 return 409
-            logging.info('New item added to database.')
+            logger.info('New item added to database.')
         else:
-            logging.error('Unknown error inserting item to database.')
+            logger.error('Unknown error inserting item to database.')
 
         return status

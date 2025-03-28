@@ -19,6 +19,7 @@ import logging
 
 import form.apps
 
+logger = logging.getLogger('django')
 
 def get_metadata(path='', default=''):
     if DEBUG:
@@ -34,7 +35,7 @@ def get_metadata(path='', default=''):
         else:
             return "unknown"
     except requests.exceptions.RequestException as e:
-        logging.warning(f"Error accessing metadata: {e}")
+        logger.warning(f"Error accessing metadata: {e}")
         return default
 
 
@@ -220,6 +221,13 @@ AWS_REGION = os.getenv('AWS_REGION')
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 AWS_SESSION_TOKEN = os.getenv('AWS_SESSION_TOKEN')
-
 AWS_S3_BUCKET_NAME = os.getenv('AWS_S3_BUCKET_NAME')
 AWS_S3_LOGS_PREFIX = os.getenv('AWS_S3_LOGS_PREFIX')
+
+RSS_URLS = [
+    'https://www.cloudcomputing-news.net/feed/',
+    'https://feeds.feedburner.com/cioreview/fvHK',
+    'https://www.techrepublic.com/rssfeeds/topic/cloud/',
+    'https://aws.amazon.com/blogs/aws/feed/',
+    'https://cloudtweaks.com/feed/',
+]

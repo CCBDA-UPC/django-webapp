@@ -6,6 +6,9 @@ from django.conf import settings
 import pathlib
 from datetime import datetime, timezone
 
+logger = logging.getLogger('django')
+logger_root = logging.getLogger()
+
 
 class S3RotatingFileHandler(logging.handlers.RotatingFileHandler):
     def __init__(self, filename, maxBytes=0, backupCount=0, encoding=None, delay=0):
@@ -25,6 +28,7 @@ class S3RotatingFileHandler(logging.handlers.RotatingFileHandler):
             self.logs_prefix += "/"
 
     def rotate(self, source, dest):
+        logger_root.info(f'ROTATING {self.name} ')
         if callable(self.rotator):
             self.rotator(source, dest)
         else:
@@ -45,10 +49,9 @@ class S3RotatingFileHandler(logging.handlers.RotatingFileHandler):
             log_data = self.format(record)
             try:
                 if self.shouldRollover(record):
-                    logging.info(f'ROLLOVER {record.name}')
                     self.doRollover()
                 self.stream.write(log_data + self.terminator)
             except Exception as err:
                 self.handleError(record)
         except ClientError as e:
-            logging.error(f"Error sending log to S3: {e}")
+            logger.error(f"Error sending log to S3: {e}")
