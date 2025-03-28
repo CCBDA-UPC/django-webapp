@@ -30,14 +30,14 @@ def get_metadata(path='', default=''):
         if response.status_code == 200:
             response = requests.get(f'http://169.254.169.254/latest/meta-data/{path}',
                                     headers={'X-aws-ec2-metadata-token': response.text})
-            print('get_metadata 1 ',path,response.text)
+            print('get_metadata [1] ',path,response.text)
             return response.text
         else:
-            print('get_metadata 2 ',path,'unknown')
+            print('get_metadata [2] ',path,'unknown')
             return "unknown"
     except requests.exceptions.RequestException as e:
         logger.warning(f"Error accessing metadata: {e}")
-        print('get_metadata 3 ', path, default)
+        print('get_metadata [3] ', path, default)
         return default
 
 
