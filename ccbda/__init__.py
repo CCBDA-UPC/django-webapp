@@ -35,7 +35,7 @@ class S3RotatingFileHandler(logging.handlers.RotatingFileHandler):
             stem = pathlib.Path(source).stem
             suffix = pathlib.Path(source).suffix
             now = datetime.now(timezone.utc).strftime("%Y-%m-%d_%H-%M-%S")
-            s3_key = f'{self.logs_prefix}{stem}.{now}.{suffix}'
+            s3_key = f'{self.logs_prefix}{stem}.{now}{suffix}'
 
             if os.path.exists(source):
                 os.rename(source, dest)
