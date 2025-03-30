@@ -2,7 +2,7 @@ import boto3
 from django.conf import settings
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('django')
 
 
 class Leads():
@@ -10,10 +10,10 @@ class Leads():
     def insert_lead(self, name, email, previewAccess):
         try:
             dynamodb = boto3.resource('dynamodb',
-                                      region_name = settings.AWS_REGION,
+                                      region_name=settings.AWS_REGION,
                                       aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
                                       aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-                                      aws_session_token=settings.AWS_SESSION_TOKEN )
+                                      aws_session_token=settings.AWS_SESSION_TOKEN)
             table = dynamodb.Table(settings.CCBDA_SIGNUP_TABLE)
         except Exception as e:
             logger.error(
@@ -35,9 +35,9 @@ class Leads():
         status = response['ResponseMetadata']['HTTPStatusCode']
         if status == 200:
             if 'Attributes' in response:
-                logger.error('Existing item updated to database.')
+                logger.info('Existing item updated to database.')
                 return 409
-            logger.error('New item added to database.')
+            logger.info('New item added to database.')
         else:
             logger.error('Unknown error inserting item to database.')
 

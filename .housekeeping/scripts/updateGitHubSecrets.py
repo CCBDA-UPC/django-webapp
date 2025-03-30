@@ -26,7 +26,7 @@ except:
     print('ERROR: filename missing\npython updateGitHubSecrets.py filename')
     exit()
 
-repo = Repo('../..')
+repo = Repo('.')
 
 github_repo = repo.config_reader().get('remote "origin"','url').replace('.git','').replace('https://github.com/','')
 

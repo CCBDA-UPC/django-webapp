@@ -8,14 +8,14 @@ ebOptions = {
     'service-role': 'LabRole',
     'elb-type': 'application',
     'instance-types':'t2.nano',
-    'keyname': 'aws-eb'
+    'keyname':'aws-eb'
 }
 
 try:
     CONFIGURATION_FILE = sys.argv[1]
     HOSTNAME = sys.argv[2]
 except:
-    print('ERROR: filename missing\npython ebcreate.py filename hostname securitygroup')
+    print('ERROR: filename missing\npython ebcreate.py filename hostname')
     exit()
 config = dotenv_values(CONFIGURATION_FILE)
 
