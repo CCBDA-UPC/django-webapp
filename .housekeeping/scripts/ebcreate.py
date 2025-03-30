@@ -13,8 +13,9 @@ ebOptions = {
 try:
     CONFIGURATION_FILE = sys.argv[1]
     HOSTNAME = sys.argv[2]
+    SECURITY_GROUP = sys.argv[3]
 except:
-    print('ERROR: filename missing\npython ebcreate.py filename hostname')
+    print('ERROR: filename missing\npython ebcreate.py filename hostname securitygroup')
     exit()
 config = dotenv_values(CONFIGURATION_FILE)
 
