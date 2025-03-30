@@ -8,6 +8,7 @@ ebOptions = {
     'service-role': 'LabRole',
     'elb-type': 'application',
     'instance-types':'t2.nano',
+    'keyname': 'aws-eb'
 }
 
 try:

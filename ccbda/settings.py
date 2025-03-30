@@ -108,11 +108,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     },
-}
-DATABASE = os.getenv('DATABASE','default')
-
-if DATABASE == "postgresql":
-    DATABASES['postgresql'] = {
+    "postgresql": {
         "ENGINE": "django.db.backends.postgresql",
         'DISABLE_SERVER_SIDE_CURSORS': True,
         "NAME": os.getenv('DB_NAME', '---no-db-name---'),
@@ -121,6 +117,9 @@ if DATABASE == "postgresql":
         "HOST": os.getenv('DB_HOST', '127.0.0.1'),
         "PORT": os.getenv('DB_PORT', 5432),
     }
+}
+
+DATABASES['default'] = DATABASES[os.getenv('DATABASE','default')]
 
 
 # Password validation
