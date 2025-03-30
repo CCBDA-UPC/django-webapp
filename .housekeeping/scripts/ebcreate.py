@@ -7,7 +7,7 @@ ebOptions = {
     'instance_profile': 'LabInstanceProfile',
     'service-role': 'LabRole',
     'elb-type': 'application',
-    'instance-types':'t2.micro',
+    'instance-types':'t2.nano',
     'keyname':'aws-eb'
 }
 
@@ -30,7 +30,6 @@ for k, v in config.items():
     opt.append(f'{k}={v}')
 ebOptions['cname'] = HOSTNAME
 ebOptions['envvars'] = '"%s"' % ','.join(opt)
-
 
 opt = []
 for k, v in ebOptions.items():
