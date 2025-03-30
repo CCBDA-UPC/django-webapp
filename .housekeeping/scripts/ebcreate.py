@@ -7,13 +7,13 @@ ebOptions = {
     'instance_profile': 'LabInstanceProfile',
     'service-role': 'LabRole',
     'elb-type': 'application',
-    'instance-types':'t2.nano'
+    'instance-types':'t2.nano',
+    'keyname': 'aws-eb'
 }
 
 try:
     CONFIGURATION_FILE = sys.argv[1]
     HOSTNAME = sys.argv[2]
-    SECURITY_GROUP = sys.argv[3]
 except:
     print('ERROR: filename missing\npython ebcreate.py filename hostname securitygroup')
     exit()
@@ -30,7 +30,6 @@ for k, v in config.items():
     opt.append(f'{k}={v}')
 ebOptions['cname'] = HOSTNAME
 ebOptions['envvars'] = '"%s"' % ','.join(opt)
-
 
 opt = []
 for k, v in ebOptions.items():
