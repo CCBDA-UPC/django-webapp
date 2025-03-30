@@ -53,7 +53,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-DEBUG = bool(os.environ.get("DJANGO_DEBUG", default=False))
+DEBUG = os.environ.get("DJANGO_DEBUG", default=False) == "True"
 
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS').split(':')
 ALLOWED_HOSTS.append(get_metadata('local-ipv4','127.0.0.1'))
