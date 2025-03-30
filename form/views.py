@@ -1,12 +1,12 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from .models import Leads
-from django.conf import settings
 import logging
+from django.conf import settings
+
+logger = logging.getLogger('django')
 
 def home(request):
-    logging.error(f'ALLOWED_HOSTS {settings.ALLOWED_HOSTS}')
-
     return render(request, 'form/index.html')
 
 
