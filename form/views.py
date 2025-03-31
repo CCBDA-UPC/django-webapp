@@ -2,7 +2,6 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from .models import Leads, Feeds
 import logging
-from django.conf import settings
 from django.views.generic.base import HttpResponseRedirect
 import datetime
 from urllib.parse import parse_qs, urlparse
@@ -27,7 +26,9 @@ def hit(request, id):
     article = Feeds.objects.get(pk=id)
     article.hits += 1
     article.save()
-    url_article = parse_qs(urlparse(article.link).query).get('url',['--missing--'])[0]
-    url_hit = request.GET.get('url', '#')
-    logger.info(f'[{url_article},{url_hit},{request.COOKIES.get('email')}]')
-    return HttpResponseRedirect(redirect_to=url_hit)
+    url_article = parse_qs(urlparse(article.link).query).get('url', ['--missing--'])[0]
+    logger.info('', {
+        "user": request.COOKIES.get('email'),
+        "article": url_article,
+    })
+    return HttpResponseRedirect(redirect_to=request.GET.get('url', '#'))

@@ -16,10 +16,10 @@ import json
 from dotenv import load_dotenv
 import requests
 import logging
-
 import form.apps
 
 logger = logging.getLogger()
+
 
 def get_metadata(path='', default=''):
     if DEBUG:
@@ -55,7 +55,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 DEBUG = os.environ.get("DJANGO_DEBUG", default='False') == 'True'
 
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS').split(':')
-ALLOWED_HOSTS.append(get_metadata('local-ipv4','127.0.0.1'))
+ALLOWED_HOSTS.append(get_metadata('local-ipv4', '127.0.0.1'))
 ALLOWED_HOSTS = list(set(ALLOWED_HOSTS))
 
 # Application definition
@@ -119,7 +119,7 @@ DATABASES = {
     }
 }
 
-DATABASES['default'] = DATABASES[os.getenv('DATABASE','default')]
+DATABASES['default'] = DATABASES[os.getenv('DATABASE', 'default')]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -160,7 +160,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AWS_EC2_INSTANCE_ID = get_metadata('instance-id','localhost')
+AWS_EC2_INSTANCE_ID = get_metadata('instance-id', 'localhost')
 
 LOGGING = {
     "version": 1,
