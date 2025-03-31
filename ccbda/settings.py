@@ -16,10 +16,10 @@ import json
 from dotenv import load_dotenv
 import requests
 import logging
-
 import form.apps
 
 logger = logging.getLogger()
+
 
 def get_metadata(path='', default=''):
     if DEBUG:
@@ -55,7 +55,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 DEBUG = os.environ.get("DJANGO_DEBUG", default='False') == 'True'
 
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS').split(':')
-ALLOWED_HOSTS.append(get_metadata('local-ipv4','127.0.0.1'))
+ALLOWED_HOSTS.append(get_metadata('local-ipv4', '127.0.0.1'))
 ALLOWED_HOSTS = list(set(ALLOWED_HOSTS))
 
 # Application definition
@@ -119,7 +119,7 @@ DATABASES = {
     }
 }
 
-DATABASES['default'] = DATABASES[os.getenv('DATABASE','default')]
+DATABASES['default'] = DATABASES[os.getenv('DATABASE', 'default')]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -160,19 +160,34 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AWS_EC2_INSTANCE_ID = get_metadata('instance-id','localhost')
+AWS_EC2_INSTANCE_ID = get_metadata('instance-id', 'localhost')
 
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
         "verbose": {
-            "format": "{asctime} {levelname} [" + AWS_EC2_INSTANCE_ID + "] [{funcName}:{module}:{lineno}] {message}",
+            "format": "{asctime} [{name}] {levelname} [" + AWS_EC2_INSTANCE_ID + "] [{funcName}:{module}:{lineno}] {message}",
             "style": "{",
         },
         "simple": {
             "format": "{asctime} {levelname} {message}",
             "style": "{",
+        },
+        "json-record-format": {
+            "()": "ccbda.JsonFormatter",
+            "basic": {
+                "timestamp": "asctime",
+                "loggerName": "name",
+                "level": "levelname",
+                "message": "message",
+                "function": "funcName",
+                "module": "module",
+                "line": "lineno",
+            },
+            "extra": {
+                "instance": AWS_EC2_INSTANCE_ID,
+            }
         },
     },
     "handlers": {
@@ -200,6 +215,12 @@ LOGGING = {
             "encoding": None,
             "delay": 0,
         },
+        "elk": {
+            "level": "DEBUG",
+            "formatter": "json-record-format",
+            "class": "ccbda.ElasticsearchHandler",
+            "index": "logs-webapp",    # ELK index name
+        }
     },
     "root": {
         "handlers": ["console"],
@@ -207,7 +228,7 @@ LOGGING = {
     },
     "loggers": {
         "django": {
-            "handlers": ["console", "file", "s3"],
+            "handlers": ["console", "elk"],
             "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
             "propagate": False,
         },
@@ -229,3 +250,6 @@ RSS_URLS = [
     'https://aws.amazon.com/blogs/aws/feed/',
     'https://cloudtweaks.com/feed/',
 ]
+
+ELK_PASSWORD = os.environ.get('ELK_PASSWORD')
+ELK_CLOUD_ID = os.environ.get('ELK_CLOUD_ID')
