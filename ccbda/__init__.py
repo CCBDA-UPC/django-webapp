@@ -28,7 +28,6 @@ class S3RotatingFileHandler(logging.handlers.RotatingFileHandler):
             self.logs_prefix += "/"
 
     def rotate(self, source, dest):
-        logger_root.info(f'ROTATING {self.name} ')
         if callable(self.rotator):
             self.rotator(source, dest)
         else:

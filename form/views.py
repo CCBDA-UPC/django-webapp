@@ -1,14 +1,13 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from .models import Leads, Feeds
-from django.views.generic.base import HttpResponseRedirect
-import datetime
 import logging
 from django.conf import settings
+from django.views.generic.base import HttpResponseRedirect
+import datetime
 from urllib.parse import parse_qs, urlparse
 
 logger = logging.getLogger('django')
-logger.info('ALLOWED_HOSTS '+','.join(settings.ALLOWED_HOSTS))
 
 def home(request):
     if Feeds.objects.all().count() == 0:
@@ -23,7 +22,6 @@ def signup(request):
     expiry_date = datetime.datetime.utcnow() + datetime.timedelta(weeks=520)
     response.set_cookie('email', request.POST['email'], expires=expiry_date)
     return response
-
 
 def hit(request, id):
     article = Feeds.objects.get(pk=id)

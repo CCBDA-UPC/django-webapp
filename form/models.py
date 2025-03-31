@@ -1,8 +1,8 @@
 import boto3
 from django.conf import settings
+import logging
 import feedparser
 import requests
-import logging
 from django.db import models
 from django.shortcuts import reverse
 from urllib.parse import urlencode, urljoin
@@ -10,37 +10,6 @@ from bs4 import BeautifulSoup
 
 
 logger = logging.getLogger('django')
-
-class Feeds(models.Model):
-    title = models.CharField(max_length=200)
-    link = models.URLField()
-    summary = models.TextField()
-    author = models.CharField(max_length=120)
-    hits = models.BigIntegerField(default=0)
-
-    def refresh_data(self):
-        for u in settings.RSS_URLS:
-            response = requests.get(u)
-            try:
-                feed = feedparser.parse(response.content)
-                for entry in feed.entries:
-                    article = Feeds.objects.create(
-                        title=entry.title,
-                        link='',
-                        summary='',
-                        author=entry.author
-                    )
-                    base_link = reverse('form:hit', kwargs={'id': article.id})
-                    article.link = urljoin(base_link,'?'+urlencode({'url':entry.link}))
-                    summary = BeautifulSoup(entry.summary, 'html.parser')
-                    for anchor in summary.find_all('a'):
-                        anchor['href'] = urljoin(base_link,'?'+urlencode({'url':anchor['href']}))
-                        anchor['target'] = '_blank'
-                    article.summary = str(summary)
-                    article.save()
-                    logger.info(f'Create article "{entry.title}"')
-            except Exception as e:
-                logger.error(f'Feed reading error: {e}')
 
 
 class Leads():
@@ -80,3 +49,34 @@ class Leads():
             logger.error('Unknown error inserting item to database.')
 
         return status
+
+class Feeds(models.Model):
+    title = models.CharField(max_length=200)
+    link = models.URLField()
+    summary = models.TextField()
+    author = models.CharField(max_length=120)
+    hits = models.BigIntegerField(default=0)
+
+    def refresh_data(self):
+        for u in settings.RSS_URLS:
+            response = requests.get(u)
+            try:
+                feed = feedparser.parse(response.content)
+                for entry in feed.entries:
+                    article = Feeds.objects.create(
+                        title=entry.title,
+                        link='',
+                        summary='',
+                        author=entry.author
+                    )
+                    base_link = reverse('form:hit', kwargs={'id': article.id})
+                    article.link = urljoin(base_link,'?'+urlencode({'url':entry.link}))
+                    summary = BeautifulSoup(entry.summary, 'html.parser')
+                    for anchor in summary.find_all('a'):
+                        anchor['href'] = urljoin(base_link,'?'+urlencode({'url':anchor['href']}))
+                        anchor['target'] = '_blank'
+                    article.summary = str(summary)
+                    article.save()
+                    logger.info(f'Create article "{entry.title}"')
+            except Exception as e:
+                logger.error(f'Feed reading error: {e}')
