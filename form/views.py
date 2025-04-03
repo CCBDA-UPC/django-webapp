@@ -1,17 +1,18 @@
 from django.http import HttpResponse
 from django.shortcuts import render
-from .models import Leads, Feeds
 import logging
 from django.views.generic.base import HttpResponseRedirect
 import datetime
 from urllib.parse import parse_qs, urlparse
+
+from .models import Leads, Feeds
 
 logger = logging.getLogger('django')
 
 def home(request):
     if Feeds.objects.all().count() == 0:
         Feeds().refresh_data()
-    feeds = Feeds.objects.order_by('-hits').all()
+    feeds = Feeds.objects.all().order_by('?')
     return render(request, 'form/index.html', {'feeds': feeds, 'email': request.COOKIES.get('email', '')})
 
 def signup(request):
