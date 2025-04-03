@@ -12,7 +12,7 @@ logger = logging.getLogger('django')
 def home(request):
     if Feeds.objects.all().count() == 0:
         Feeds().refresh_data()
-    feeds = Feeds.objects.all().order_by('?')
+    feeds = Feeds.objects.all().order_by('?')[:14]
     return render(request, 'form/index.html', {'feeds': feeds, 'email': request.COOKIES.get('email', '')})
 
 def signup(request):
