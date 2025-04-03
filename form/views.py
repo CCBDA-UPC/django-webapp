@@ -12,7 +12,7 @@ logger = logging.getLogger('django')
 def home(request):
     if Feeds.objects.all().count() == 0:
         Feeds().refresh_data()
-    feeds = Feeds.objects.all().order_by('?')
+    feeds = Feeds.objects.all().order_by('?')[:14]
     logger.info('', {
         "user": request.COOKIES.get('email')
     })
