@@ -8,11 +8,16 @@ from urllib.parse import parse_qs, urlparse
 
 logger = logging.getLogger('django')
 
+
 def home(request):
     if Feeds.objects.all().count() == 0:
         Feeds().refresh_data()
     feeds = Feeds.objects.order_by('-hits').all()
+    logger.info('', {
+        "user": request.COOKIES.get('email')
+    })
     return render(request, 'form/index.html', {'feeds': feeds, 'email': request.COOKIES.get('email', '')})
+
 
 def signup(request):
     leads = Leads()
@@ -21,6 +26,7 @@ def signup(request):
     expiry_date = datetime.datetime.utcnow() + datetime.timedelta(weeks=520)
     response.set_cookie('email', request.POST['email'], expires=expiry_date)
     return response
+
 
 def hit(request, id):
     article = Feeds.objects.get(pk=id)

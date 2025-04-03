@@ -174,6 +174,10 @@ LOGGING = {
             "format": "{asctime} {levelname} {message}",
             "style": "{",
         },
+        "simple_nots": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
         "json-record-format": {
             "()": "ccbda.JsonFormatter",
             "basic": {
@@ -188,7 +192,7 @@ LOGGING = {
             "extra": {
                 "instance": AWS_EC2_INSTANCE_ID,
             }
-        },
+        }
     },
     "handlers": {
         "console": {
@@ -219,14 +223,26 @@ LOGGING = {
             "level": "DEBUG",
             "formatter": "json-record-format",
             "class": "ccbda.ElasticsearchHandler",
-            "index": "logs-webapp",    # ELK index name
+            "index": "logs-webapp",  # ELK index name
+        },
+        "cloudwatch": {
+            "level": "DEBUG",
+            "formatter": "simple_nots",
+            "class": "watchtower.CloudWatchLogHandler",
+            "log_group": "django-webapp",  # AWS_EC2_INSTANCE_ID
+            "log_stream_name":AWS_EC2_INSTANCE_ID+"/{logger_name}/{process_id}"
         }
     },
     "root": {
-        "handlers": ["console"],
+        "handlers": ["console", "cloudwatch"],
         "level": "INFO",
     },
     "loggers": {
+        "django.server": {
+            "handlers": ["console", "cloudwatch"],
+            "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+            "propagate": False,
+        },
         "django": {
             "handlers": ["console", "elk"],
             "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
