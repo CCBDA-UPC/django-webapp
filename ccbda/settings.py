@@ -32,7 +32,7 @@ def get_metadata(path='', default=''):
                                     headers={'X-aws-ec2-metadata-token': response.text})
             return response.text
         else:
-            return "unknown"
+            return default
     except requests.exceptions.RequestException as e:
         logger.warning(f"Error accessing metadata: {e}")
         return default
