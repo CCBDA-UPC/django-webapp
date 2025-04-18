@@ -230,7 +230,8 @@ LOGGING = {
             "formatter": "simple_nots",
             "class": "watchtower.CloudWatchLogHandler",
             "log_group": "django-webapp",  # AWS_EC2_INSTANCE_ID
-            "log_stream_name":AWS_EC2_INSTANCE_ID+"/{logger_name}/{process_id}"
+            "log_stream_name":AWS_EC2_INSTANCE_ID+"/{logger_name}/{process_id}",
+            "region": 'us-east-1',
         }
     },
     "root": {
@@ -269,3 +270,4 @@ RSS_URLS = [
 
 ELK_PASSWORD = os.environ.get('ELK_PASSWORD')
 ELK_CLOUD_ID = os.environ.get('ELK_CLOUD_ID')
+AWS_DEFAULT_REGION = os.environ.get('AWS_DEFAULT_REGION')
