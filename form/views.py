@@ -2,7 +2,6 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from .models import Leads
 import logging
-from django.conf import settings
 
 logger = logging.getLogger('django')
 
