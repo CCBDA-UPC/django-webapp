@@ -119,7 +119,7 @@ DATABASES = {
     }
 }
 
-DATABASES['default'] = DATABASES[os.getenv('DATABASE', 'default')]
+DATABASES['default'] = DATABASES[os.getenv('DATABASE','default')]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

@@ -1,11 +1,10 @@
 from django.http import HttpResponse
 from django.shortcuts import render
+from .models import Leads, Feeds
 import logging
 from django.views.generic.base import HttpResponseRedirect
 import datetime
 from urllib.parse import parse_qs, urlparse
-
-from .models import Leads, Feeds
 
 logger = logging.getLogger('django')
 

@@ -42,6 +42,7 @@ class S3RotatingFileHandler(logging.handlers.RotatingFileHandler):
                     self.s3_client.upload_file(dest, self.bucket_name, s3_key)
                 os.remove(dest)
 
+
     def emit(self, record):
         try:
             log_data = self.format(record)
