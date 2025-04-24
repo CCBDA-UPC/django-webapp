@@ -7,7 +7,7 @@ ebOptions = {
     'instance_profile': 'LabInstanceProfile',
     'service-role': 'LabRole',
     'elb-type': 'application',
-    'instance-types':'t2.nano',
+    'instance-types':'t2.small',
     'keyname':'aws-eb'
 }
 
